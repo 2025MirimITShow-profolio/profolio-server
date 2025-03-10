@@ -10,6 +10,8 @@ import { ProgressLogModule } from './progress_log/progress_log.module';
 import { UsersModule } from './users/users.module';
 import { ProjectsModule } from './projects/projects.module';
 import { PortfolioModule } from './portfolio/portfolio.module';
+import { MongooseModule } from '@nestjs/mongoose';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -21,10 +23,14 @@ import { PortfolioModule } from './portfolio/portfolio.module';
     DailyTasksModule,
     SharedProjectsModule,
     SharedProjectsModule,
-    AiFeedbacksModule,
+    AiFeedbacksModule, 
     SkillsModule,
+    ConfigModule.forRoot({isGlobal: true, envFilePath: '.local.env'}),
+    MongooseModule.forRoot(process.env.MongoDB_URI as string),
   ],
   controllers: [AppController],
   providers: [AppService],
 })
+
+
 export class AppModule {}
