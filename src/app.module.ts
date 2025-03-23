@@ -27,7 +27,7 @@ import { AuthModule } from './auth/auth.module';
     AiFeedbacksModule,
     SkillsModule,
     ConfigModule.forRoot({isGlobal: true, envFilePath: '.local.env'}),
-    MongooseModule.forRoot(process.env.MongoDB_URI as string || 'mongodb://localhost:27017/nuto'),
+    MongooseModule.forRoot(process.env.MongoDB_URI as string || 'mongodb://localhost:27017/profolio'),
     AuthModule,
   ],
   controllers: [AppController],
