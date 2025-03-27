@@ -10,12 +10,24 @@ import { ProgressLogModule } from './progress_log/progress_log.module';
 import { UsersModule } from './users/users.module';
 import { ProjectsModule } from './projects/projects.module';
 import { PortfolioModule } from './portfolio/portfolio.module';
-import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { User } from './users/entity/user.entity';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({isGlobal: true, envFilePath: '.local.env'}),
+    TypeOrmModule.forRoot({
+      type: 'mysql',
+      host: 'localhost',
+      port: 3306,
+      username: process.env.MYSQL_USERNAME,
+      password: process.env.MYSQL_PASSWORD,
+      database: 'profolio',
+      entities: [User],
+      synchronize: true,
+    }),
     UsersModule,
     ProjectsModule,
     PortfolioModule,
@@ -26,13 +38,10 @@ import { AuthModule } from './auth/auth.module';
     SharedProjectsModule,
     AiFeedbacksModule,
     SkillsModule,
-    ConfigModule.forRoot({isGlobal: true, envFilePath: '.local.env'}),
-    MongooseModule.forRoot(process.env.MongoDB_URI as string || 'mongodb://localhost:27017/profolio'),
     AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-
 
 export class AppModule {}
