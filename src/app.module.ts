@@ -13,21 +13,14 @@ import { PortfolioModule } from './portfolio/portfolio.module';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from './users/entity/user.entity';
+import { typeORMConfig } from './ormconfig';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({isGlobal: true, envFilePath: '.local.env'}),
-    TypeOrmModule.forRoot({
-      type: 'mysql',
-      host: 'localhost',
-      port: 3306,
-      username: process.env.MYSQL_USERNAME,
-      password: process.env.MYSQL_PASSWORD,
-      database: 'profolio',
-      entities: [User],
-      synchronize: true,
+    ConfigModule.forRoot({
+      isGlobal: true,
     }),
+    TypeOrmModule.forRoot(typeORMConfig),
     UsersModule,
     ProjectsModule,
     PortfolioModule,
@@ -43,5 +36,4 @@ import { User } from './users/entity/user.entity';
   controllers: [AppController],
   providers: [AppService],
 })
-
 export class AppModule {}
