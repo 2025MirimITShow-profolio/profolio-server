@@ -17,7 +17,7 @@ export class UsersController {
   }
 
   @UseGuards(LocalAuthGuard)
-  @Post('login')
+  @Post('signin')
   async logIn(@Req() req){
     const user = req?.user;
     

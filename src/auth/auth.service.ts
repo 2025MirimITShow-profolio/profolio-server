@@ -1,20 +1,21 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose'; 
-import { User, UserDocument } from 'src/users/schemas/users.schema';
-import { Model } from 'mongoose';
+import { User } from 'src/users/entity/user.entity';
 import { compare } from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectModel(User.name) private userModel: Model<UserDocument>,
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
     private readonly jwtService: JwtService,
   ) {}
 
   async validateUser(email: string, password: string){
-    console.log(email);
-    const user = await this.userModel.findOne({ email }).lean();
+
+    const user = await this.userRepository.findOne({where: {email}});
 
     if(!user)
       throw new BadRequestException('잘못된 이메일');
@@ -29,9 +30,8 @@ export class AuthService {
 
   async logIn(user){
     return {
-      accessToken: this.jwtService.sign(user),
+      accessToken: this.jwtService.sign({ userId: user.id, email: user.email }),
     };
   }
-
 
 }

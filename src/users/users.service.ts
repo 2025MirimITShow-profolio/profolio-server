@@ -1,33 +1,31 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
-import { User, UserDocument } from './schemas/users.schema';
+import { User } from './entity/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectModel(User.name) private userModel: Model<UserDocument>,
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
   ) {}
 
   async createUser(createUserDto: CreateUserDto): Promise<User> {
 
     const hashedPassword = await this.createPassword(createUserDto.password);
 
-    const newUser = new this.userModel({ 
+    const newUser = this.userRepository.create({ 
       ...createUserDto, 
       password: hashedPassword 
     });
-    
-    await newUser.save();
-    
-    return newUser;
+        
+    return this.userRepository.save(newUser);
   }
 
   async createPassword(plainPassword: string): Promise<string> {
-        const hashedPassword = await bcrypt.hash(plainPassword, 10);
-        return hashedPassword;
+        return bcrypt.hash(plainPassword, 10);
   }
 
 }
