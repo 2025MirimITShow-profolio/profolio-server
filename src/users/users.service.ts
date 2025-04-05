@@ -28,4 +28,8 @@ export class UsersService {
         return bcrypt.hash(plainPassword, 10);
   }
 
+  async findById(id: number): Promise<User> {
+    return this.userRepository.findOneBy({id});
+  }
+
 }
