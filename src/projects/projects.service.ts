@@ -26,5 +26,8 @@ export class ProjectsService {
     return this.projectRepository.save(newProject);
   }
 
+  async getAllProjects(user:User):Promise<Project[]>{
+    return this.projectRepository.find({where: {user: {id: user.id}}});
+  }
 
 }

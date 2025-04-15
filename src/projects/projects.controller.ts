@@ -14,6 +14,12 @@ export class ProjectsController {
     return this.projectsService.createProject(dto, user);
   }
 
+  @Get()
+  @UseGuards(AuthGuard('jwt'))
+  getAllProjects(@Req() req){
+    const user = req.user;
+    return this.projectsService.getAllProjects(user);
+  }
   
 
 }
