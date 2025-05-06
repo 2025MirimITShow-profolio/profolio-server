@@ -19,4 +19,9 @@ export class TasksController {
   async findAllTasks() {
     return this.tasksService.findAllTasks();
   }
+
+  @Get(':task_id')
+  async findOneTask(@Param('task_id') task_id: number) {
+    return this.tasksService.findOneTask(task_id);
+  }
 }

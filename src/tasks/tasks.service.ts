@@ -48,4 +48,21 @@ export class TasksService {
       );
     }
   }
+
+  async findOneTask(id: number): Promise<Task> {
+    try {
+      const task = await this.taskRepository.findOneBy({ id });
+
+      if (!task) {
+        throw new NotFoundException('Task not found');
+      }
+
+      return task;
+    } catch (err) {
+      if (err instanceof NotFoundException) {
+        throw err;
+      }
+      throw new InternalServerErrorException('Failed to retrieve task : ', err);
+    }
+  }
 }
