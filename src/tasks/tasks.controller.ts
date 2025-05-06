@@ -24,4 +24,9 @@ export class TasksController {
   async findOneTask(@Param('task_id') task_id: number) {
     return this.tasksService.findOneTask(task_id);
   }
+
+  @Get(':task_id')
+  async deleteTask(@Param('task_id') task_id: number) {
+    return this.tasksService.deleteTask(task_id);
+  }
 }

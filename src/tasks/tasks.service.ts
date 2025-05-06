@@ -65,4 +65,21 @@ export class TasksService {
       throw new InternalServerErrorException('Failed to retrieve task : ', err);
     }
   }
+
+  async deleteTask(id: number) {
+    try {
+      const task = await this.taskRepository.findOneBy({ id });
+
+      if (!task) {
+        throw new NotFoundException('Task not found');
+      }
+
+      return await this.taskRepository.remove(task);
+    } catch (err) {
+      if (err instanceof NotFoundException) {
+        throw err;
+      }
+      throw new InternalServerErrorException('Failed to retrieve task : ', err);
+    }
+  }
 }
