@@ -1,53 +1,79 @@
-import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { AiFeedbacks, AiFeedbacksDocument } from './ai_feedbacks.schema';
-import * as moment from 'moment-timezone';
+import { Injectable, BadRequestException } from '@nestjs/common';
+import { HttpService } from '@nestjs/axios';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { firstValueFrom } from 'rxjs';
+import { AiFeedback, AiMessage } from './ai_feedbacks.entity';
+import { randomUUID } from 'crypto';
 
 @Injectable()
 export class AiFeedbacksService {
-    constructor(@InjectModel(AiFeedbacks.name) private aifeedbacksModel: Model<AiFeedbacksDocument>){}
+  private readonly API_KEY = process.env.GEMINI_API_KEY;
+  private readonly BASE_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
 
-    // 최초 채팅 전송
-    async createAiFeedbacks(
-        project_id: string
-    ): Promise<AiFeedbacks | void> {
-        // 한국 시간
-        const kstNow = moment().tz('Asia/Seoul').toDate();
+  constructor(
+    private readonly httpService: HttpService,
+    @InjectRepository(AiFeedback)
+    private readonly feedbackRepo: Repository<AiFeedback>
+  ) {}
 
-        const firstChat = new this.aifeedbacksModel({
-            project_id,
-            messages: [{ chat: "안녕" }],
-            created_at: kstNow,
-            updated_at: kstNow
+  // 프로젝트가 존재하면 기존 메시지 배열에 새 메시지 추가 아니면 생성
+  async createChat(prompt: string, projectId: string): Promise<AiMessage> {
+    const url = `${this.BASE_URL}?key=${this.API_KEY}`;
+    const body = {
+      contents: [
+        {
+          parts: [{ text: prompt }],
+        },
+      ],
+    };
+
+    const headers = { 'Content-Type': 'application/json' };
+
+    try {
+      const response = await firstValueFrom(
+        this.httpService.post(url, body, { headers })
+      );
+
+      const newMessages = [
+        {
+          role: 'user' as const,
+          content: prompt,
+          timestamp: new Date().toISOString(),
+        },
+        {
+          role: 'ai' as const,
+          content: response.data?.candidates?.[0]?.content?.parts?.[0]?.text || '',
+          timestamp: new Date().toISOString(),
+        },
+      ];
+
+      let feedback = await this.feedbackRepo.findOne({ where: { projectId: projectId } });
+
+      if (feedback) {
+        const updatedMessages = [...feedback.messages, ...newMessages];
+        feedback.messages = updatedMessages;
+        await this.feedbackRepo.save(feedback);
+      } else {
+        feedback = this.feedbackRepo.create({
+          id: randomUUID(),
+          projectId,
+          messages: newMessages,
         });
+        await this.feedbackRepo.save(feedback);
+      }
 
-        return firstChat.save();
+      return newMessages[1];
+    } catch (error) {
+      throw new Error(`Gemini API 오류: ${error.response?.data?.error?.message || error.message}`);
     }
+  }
 
-    // 채팅 조회
-    async getAiFeedbacks(project_id: string): Promise<object | null> {
-        return this.aifeedbacksModel.findOne({project_id}).select('messages').exec();
+  async getChat(projectId: string): Promise<AiMessage[]>{
+    const result = await this.feedbackRepo.findOne({ where: { projectId: projectId } });
+    if(!result){
+      throw new BadRequestException('해당 프로젝트가 존재하지 않음');
     }
-
-    // 채팅 전송 
-    async updateAiFeedbacks(project_id: string, chat: string): Promise<object | null> {
-        const kstNow = moment().tz('Asia/Seoul').toDate(); 
-        
-        await this.aifeedbacksModel.updateOne(
-            { project_id }, 
-            {
-                $push: { messages: { chat } }, 
-                $set: { updated_at: kstNow }  
-            }
-        ).exec();
-
-        return this.aifeedbacksModel.findOne({ project_id }).exec();
-    }
-
-    // 채팅 삭제(임시)
-    async deleteAiFeedbacks(project_id: string) {
-        this.aifeedbacksModel.findOneAndDelete({project_id}).exec();
-    }
-    
+    return result.messages;
+  }
 }
