@@ -86,6 +86,18 @@ export class TasksService {
     }
   }
 
+  async updateTaskStatus(id: number): Promise<Task> {
+    try {
+      const task = await this.taskRepository.findOneBy({ id });
+      if (!task) {
+        throw new NotFoundException('Task not found.');
+      }
+
+      !task.is_done;
+      return await this.taskRepository.save(task);
+    } catch (err) {}
+  }
+
   async deleteTask(id: number) {
     try {
       const tasks = await this.taskRepository.findOneBy({ id });
