@@ -17,8 +17,8 @@ export class Task {
   @Column({ name: 'title', nullable: false })
   title: string;
 
-  @Column({ name: 'status', nullable: false, default: false })
-  is_done;
+  @Column({ name: 'is_done', nullable: false, default: false })
+  is_done: boolean;
 
   @CreateDateColumn()
   created_at: Date;
@@ -27,6 +27,9 @@ export class Task {
   updated_at: Date;
 
   @ManyToOne(() => Project, (project) => project.tasks, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'project_id', referencedColumnName: 'id' })
-  project_id: number;
+  @JoinColumn({ name: 'project_id' })
+  project?: Project;
+
+  @Column({ name: 'project_id', nullable: true })
+  project_id?: number;
 }
