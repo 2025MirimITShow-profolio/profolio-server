@@ -6,5 +6,5 @@ export class CreateTaskDto {
   title: string;
 
   @IsOptional()
-  proejct_id;
+  project_id;
 }

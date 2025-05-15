@@ -17,6 +17,11 @@ export class TasksController {
     return this.tasksService.findAllTasks();
   }
 
+  @Get(':project_id')
+  async findAllTasksByProject(@Param('project_id') project_id: number) {
+    return this.tasksService.findAllTasksByProject(project_id);
+  }
+
   @Delete(':task_id')
   async deleteTask(@Param('task_id') task_id: number) {
     return this.tasksService.deleteTask(task_id);

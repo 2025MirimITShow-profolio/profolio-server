@@ -20,7 +20,7 @@ export class TasksService {
   async create(createTaskDto: CreateTaskDto): Promise<Task> {
     try {
       const project = await this.projectService.findProjectByProjectID(
-        createTaskDto.proejct_id,
+        createTaskDto.project_id,
       );
       if (!project) {
         throw new NotFoundException('Project not found.');
@@ -37,14 +37,9 @@ export class TasksService {
     }
   }
 
-  async findAllTasks(): Promise<Task[]> {
+  async findAllTasks(): Promise<Task[] | null> {
     try {
-      const tasks = await this.taskRepository.find();
-      if (!tasks) {
-        throw new NotFoundException('Tasks not found');
-      }
-
-      return tasks;
+      return await this.taskRepository.find();
     } catch (err) {
       if (err instanceof NotFoundException) {
         throw err;
@@ -54,6 +49,18 @@ export class TasksService {
         err,
       );
     }
+  }
+
+  async findAllTasksByProject(project_id: number): Promise<Task[] | null> {
+    try {
+      const project =
+        await this.projectService.findProjectByProjectID(project_id);
+      if (!project) {
+        throw new NotFoundException('Project not found.');
+      }
+
+      return await this.taskRepository.find({ where: { project_id } });
+    } catch (err) {}
   }
 
   async deleteTask(id: number) {
