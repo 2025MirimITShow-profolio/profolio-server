@@ -55,4 +55,20 @@ export class TasksService {
       );
     }
   }
+
+  async deleteTask(id: number) {
+    try {
+      const tasks = await this.taskRepository.findOneBy({ id });
+      if (!tasks) {
+        throw new NotFoundException('Task not found');
+      }
+
+      return await this.taskRepository.delete(id);
+    } catch (err) {
+      if (err instanceof NotFoundException) {
+        throw err;
+      }
+      throw new InternalServerErrorException('Failed to delete task');
+    }
+  }
 }
