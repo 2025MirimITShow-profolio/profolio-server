@@ -8,6 +8,7 @@ import { Task } from './entity/task.entity';
 import { Repository } from 'typeorm';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { ProjectsService } from 'src/projects/projects.service';
+import { UpdateTaskDto } from './dto/update-task.dto';
 
 @Injectable()
 export class TasksService {
@@ -60,7 +61,29 @@ export class TasksService {
       }
 
       return await this.taskRepository.find({ where: { project_id } });
-    } catch (err) {}
+    } catch (err) {
+      if (err instanceof NotFoundException) {
+        throw err;
+      }
+      throw new InternalServerErrorException('Failed to retrieve task : ', err);
+    }
+  }
+
+  async updateTask(id: number, updateTaskDto: UpdateTaskDto): Promise<Task> {
+    try {
+      const task = await this.taskRepository.findOneBy({ id });
+      if (!task) {
+        throw new NotFoundException('Task not found.');
+      }
+      await this.taskRepository.save(updateTaskDto);
+
+      return await this.taskRepository.findOneBy({ id });
+    } catch (err) {
+      if (err instanceof NotFoundException) {
+        throw err;
+      }
+      throw new InternalServerErrorException('Failed to update task : ', err);
+    }
   }
 
   async deleteTask(id: number) {
