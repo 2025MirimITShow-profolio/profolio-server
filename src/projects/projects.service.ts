@@ -10,16 +10,18 @@ import { User } from 'src/users/entity/user.entity';
 export class ProjectsService {
   constructor(
     @InjectRepository(Project)
-    private projectRepository: Repository<Project>
+    private projectRepository: Repository<Project>,
   ) {}
 
-  async createProject(createProjectDto: CreateProjectDto, user: User): Promise<Project> {
-
+  async createProject(
+    createProjectDto: CreateProjectDto,
+    user: User,
+  ): Promise<Project> {
     const newProject = this.projectRepository.create({
       ...createProjectDto,
       start_date: new Date(createProjectDto.start_date),
       end_date: new Date(createProjectDto.end_date),
-      user: user
+      user: user,
     });
 
     console.log(newProject);
@@ -27,16 +29,28 @@ export class ProjectsService {
     return this.projectRepository.save(newProject);
   }
 
-  async getAllProjects(userId:number):Promise<Project[]>{
-    return this.projectRepository.find({where: {user: {id: userId}}});
+  async findProjectByProjectID(id): Promise<Project | null> {
+    return await this.projectRepository.findOneBy({ id });
   }
 
-  async getProject(projectId: number, userId:number):Promise<Project>{
-    return this.projectRepository.findOne({where:{id: projectId, user: {id: userId}}})
+  async getAllProjects(userId: number): Promise<Project[]> {
+    return this.projectRepository.find({ where: { user: { id: userId } } });
   }
 
-  async updateProject(projectId: number, userId:number, updateProjectDto: UpdateProjectDto):Promise<Project>{
-    const project = await this.projectRepository.findOne({where:{id: projectId, user: {id: userId}}});
+  async getProject(projectId: number, userId: number): Promise<Project> {
+    return this.projectRepository.findOne({
+      where: { id: projectId, user: { id: userId } },
+    });
+  }
+
+  async updateProject(
+    projectId: number,
+    userId: number,
+    updateProjectDto: UpdateProjectDto,
+  ): Promise<Project> {
+    const project = await this.projectRepository.findOne({
+      where: { id: projectId, user: { id: userId } },
+    });
 
     const newProject = {
       ...project,
@@ -44,8 +58,7 @@ export class ProjectsService {
     };
 
     newProject.id = project.id;
-    
+
     return this.projectRepository.save(newProject);
   }
-
 }

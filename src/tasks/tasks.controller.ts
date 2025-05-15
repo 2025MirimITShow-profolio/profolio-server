@@ -1,4 +1,4 @@
-import { Controller, Param, Post, Get } from '@nestjs/common';
+import { Controller, Param, Post, Get, Delete } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 
@@ -7,12 +7,9 @@ import { CreateTaskDto } from './dto/create-task.dto';
 export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
 
-  @Post('/:project_id')
-  async create(
-    @Param('project_id') project_id: number,
-    createTaskDto: CreateTaskDto,
-  ) {
-    return this.tasksService.create(project_id, createTaskDto);
+  @Post()
+  async create(createTaskDto: CreateTaskDto) {
+    return this.tasksService.create(createTaskDto);
   }
 
   @Get()
