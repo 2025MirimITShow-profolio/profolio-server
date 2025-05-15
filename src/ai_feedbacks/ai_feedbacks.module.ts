@@ -1,13 +1,12 @@
 import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { AiFeedback } from './ai_feedbacks.entity';
+import { HttpModule } from '@nestjs/axios';
 import { AiFeedbacksService } from './ai_feedbacks.service';
 import { AiFeedbacksController } from './ai_feedbacks.controller';
-import { AiFeedbacks, AiFeedbacksSchema } from './ai_feedbacks.schema';
 
 @Module({
-  imports: [
-    MongooseModule.forFeature([{name: AiFeedbacks.name, schema: AiFeedbacksSchema}])
-  ],
+  imports: [TypeOrmModule.forFeature([AiFeedback]), HttpModule],
   controllers: [AiFeedbacksController],
   providers: [AiFeedbacksService],
 })
