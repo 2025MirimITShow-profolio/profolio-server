@@ -6,6 +6,7 @@ import { UpdateProjectDto } from './dto/update-project.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthUser } from 'src/decorators/user.decorator';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { ProjectTimelineDto } from './dto/project-timeline.dto';
 
 @Controller('api/projects')
 export class ProjectsController {
@@ -22,6 +23,12 @@ export class ProjectsController {
   @UseGuards(JwtAuthGuard)
   async getAllProjects(@AuthUser('id') userId):Promise<Project[]>{
     return this.projectsService.getAllProjects(userId);
+  }
+
+  @Get('timeline')
+  @UseGuards(JwtAuthGuard)
+  async getTimeline(@AuthUser('id') userId):Promise<ProjectTimelineDto[]>{
+    return this.projectsService.getTimeline(userId);
   }
 
   @Get(':project_id')
