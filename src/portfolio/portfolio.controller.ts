@@ -1,4 +1,4 @@
-import { Body, Controller, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Param, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { PortfolioService } from './portfolio.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
@@ -27,5 +27,10 @@ export class PortfolioController {
     @Body('project_id') projectId: number,
 ){
     return this.portfolioService.uploadPortfolio(file, projectId);
+  }
+
+  @Delete(':portfolio_id')
+  async deletePortfolio(@Param('portfolio_id') portfolio_id){
+    this.portfolioService.deletePortfolio(portfolio_id);
   }
 }
