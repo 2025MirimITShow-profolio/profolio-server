@@ -1,4 +1,4 @@
-import { Body, Req, Controller, Get, Post, UseGuards, Param, Patch } from '@nestjs/common';
+import { Body, Req, Controller, Get, Post, UseGuards, Param, Patch, Delete } from '@nestjs/common';
 import { ProjectsService } from './projects.service';
 import { Project } from './entity/projects.entity';
 import { CreateProjectDto } from './dto/create-project.dto';
@@ -37,6 +37,12 @@ export class ProjectsController {
     @AuthUser('id') userId,
     @Body() updateProjectDto: UpdateProjectDto):Promise<Project>{
     return this.projectsService.updateProject(+project_id, userId, updateProjectDto);
+  }
+
+  @Delete(':project_id')
+  @UseGuards(JwtAuthGuard)
+  async deleteProject(@Param('project_id') project_id, @AuthUser('id') userId){
+    return this.projectsService.deleteProject(+project_id, userId);
   }
   
 

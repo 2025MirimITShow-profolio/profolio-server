@@ -61,4 +61,11 @@ export class ProjectsService {
 
     return this.projectRepository.save(newProject);
   }
+
+  async deleteProject(
+    projectId: number,
+    userId: number
+  ){
+    await this.projectRepository.delete({id: projectId, user: {id: userId}});
+  }
 }
