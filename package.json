@@ -40,6 +40,7 @@
     "class-validator": "^0.14.1",
     "cross-env": "7.0.3",
     "dotenv": "16.4.7",
+    "fs": "0.0.1-security",
     "marked": "15.0.12",
     "moment-timezone": "^0.5.48",
     "mongoose": "^8.13.0",
