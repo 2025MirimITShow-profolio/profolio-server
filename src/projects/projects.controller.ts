@@ -37,6 +37,12 @@ export class ProjectsController {
     return this.projectsService.getCounts(userId);
   }
 
+  @Get('titles')
+  @UseGuards(JwtAuthGuard)
+  async getTitles(@AuthUser('id') userId){
+    return this.projectsService.getTitles(userId);
+  }
+
   @Get(':project_id')
   @UseGuards(JwtAuthGuard)
   async getProject(@Param('project_id') project_id, @AuthUser('id') userId):Promise<Project>{

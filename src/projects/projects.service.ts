@@ -63,6 +63,14 @@ export class ProjectsService {
     };
   }
 
+  async getTitles(
+    userId: number
+  ): Promise<{ id: number, title: string }[]>{
+    return await this.projectRepository.find({
+      select: ['id', 'title'], where: {user:{id:userId}}
+    });
+  }
+
   async getProject(projectId: number, userId: number): Promise<Project> {
     return this.projectRepository.findOne({
       where: { id: projectId, user: { id: userId } },
