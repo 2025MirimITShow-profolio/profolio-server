@@ -31,6 +31,12 @@ export class ProjectsController {
     return this.projectsService.getTimeline(userId);
   }
 
+  @Get('counts')
+  @UseGuards(JwtAuthGuard)
+  async getCounts(@AuthUser('id') userId){
+    return this.projectsService.getCounts(userId);
+  }
+
   @Get(':project_id')
   @UseGuards(JwtAuthGuard)
   async getProject(@Param('project_id') project_id, @AuthUser('id') userId):Promise<Project>{

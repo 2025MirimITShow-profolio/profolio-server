@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Project } from './entity/projects.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { LessThanOrEqual, MoreThan, Repository } from 'typeorm';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { User } from 'src/users/entity/user.entity';
@@ -42,6 +42,25 @@ export class ProjectsService {
     userId: number
   ): Promise<ProjectTimelineDto[]> {
     return await this.projectRepository.find({select:['id', 'title', 'start_date', 'end_date'], where: {user:{id:userId}}});
+  }
+
+  async getCounts(
+    userId: number
+  ): Promise<{ in_progress: number; completed: number }>{
+    const today = new Date();
+
+    const inProgressCnt = await this.projectRepository.count({
+      where: {user: {id: userId}, end_date: MoreThan(today)}
+    });
+
+    const completedCnt = await this.projectRepository.count({
+      where: {user: {id: userId}, end_date: LessThanOrEqual(today)}
+    });
+
+    return {
+      in_progress: inProgressCnt,
+      completed: completedCnt
+    };
   }
 
   async getProject(projectId: number, userId: number): Promise<Project> {
