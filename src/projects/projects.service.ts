@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { User } from 'src/users/entity/user.entity';
+import { ProjectTimelineDto } from './dto/project-timeline.dto';
 
 @Injectable()
 export class ProjectsService {
@@ -35,6 +36,12 @@ export class ProjectsService {
 
   async getAllProjects(userId: number): Promise<Project[]> {
     return this.projectRepository.find({ where: { user: { id: userId } } });
+  }
+  
+  async getTimeline(
+    userId: number
+  ): Promise<ProjectTimelineDto[]> {
+    return await this.projectRepository.find({select:['id', 'title', 'start_date', 'end_date'], where: {user:{id:userId}}});
   }
 
   async getProject(projectId: number, userId: number): Promise<Project> {
