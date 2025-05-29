@@ -26,9 +26,9 @@ export class TasksController {
     return this.tasksService.findAllTasks();
   }
 
-  @Get(':project_id')
-  async findAllTasksByProject(@Param('project_id') project_id: number) {
-    return this.tasksService.findAllTasksByProject(project_id);
+  @Get(':task_id')
+  async findOneTask(@Param('task_id') task_id: number) {
+    return this.tasksService.findOneTask(task_id);
   }
 
   @Patch(':task_id')
@@ -47,5 +47,10 @@ export class TasksController {
   @Delete(':task_id')
   async deleteTask(@Param('task_id') task_id: number) {
     return this.tasksService.deleteTask(task_id);
+  }
+
+  @Get('project/:project_id')
+  async findAllTasksByProject(@Param('project_id') project_id: number) {
+    return this.tasksService.findAllTasksByProject(project_id);
   }
 }

@@ -23,9 +23,6 @@ export class TasksService {
       const project = await this.projectService.findProjectByProjectID(
         createTaskDto.project_id,
       );
-      if (!project) {
-        throw new NotFoundException('Project not found.');
-      }
 
       const task = { ...createTaskDto, project };
 
@@ -38,18 +35,12 @@ export class TasksService {
     }
   }
 
-  async findAllTasks(): Promise<Task[] | null> {
-    try {
-      return await this.taskRepository.find();
-    } catch (err) {
-      if (err instanceof NotFoundException) {
-        throw err;
-      }
-      throw new InternalServerErrorException(
-        'Failed to retrieve tasks : ',
-        err,
-      );
-    }
+  async findAllTasks(): Promise<Task[]> {
+    return await this.taskRepository.find();
+  }
+
+  async findOneTask(id: number): Promise<Task> {
+    return await this.taskRepository.findOneBy({ id });
   }
 
   async findAllTasksByProject(project_id: number): Promise<Task[] | null> {
