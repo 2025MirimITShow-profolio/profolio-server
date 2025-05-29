@@ -84,7 +84,7 @@ export class TasksService {
         throw new NotFoundException('Task not found.');
       }
 
-      !task.is_done;
+      task.is_done = !task.is_done;
       return await this.taskRepository.save(task);
     } catch (err) {}
   }
