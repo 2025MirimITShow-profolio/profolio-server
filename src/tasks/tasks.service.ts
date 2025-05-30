@@ -25,10 +25,11 @@ export class TasksService {
         createTaskDto.project_id,
       );
 
-      const task = { ...createTaskDto, project, user };
+      const task = { ...createTaskDto, project, user, user_id: user.id };
 
       return await this.taskRepository.save(task);
     } catch (err) {
+      console.log(err);
       if (err instanceof NotFoundException) {
         throw err;
       }
@@ -41,7 +42,21 @@ export class TasksService {
   }
 
   async findOneTask(user_id: number, id: number): Promise<Task> {
-    return await this.taskRepository.findOne({ where: { user_id, id } });
+    try {
+      const task = await this.taskRepository.findOne({
+        where: { user_id, id },
+      });
+      if (!task) {
+        throw new NotFoundException('Task not found');
+      }
+
+      return task;
+    } catch (err) {
+      if (err instanceof NotFoundException) {
+        throw err;
+      }
+      throw new InternalServerErrorException('Failed to retrieve task : ', err);
+    }
   }
 
   async findAllTasksByProject(
@@ -98,7 +113,12 @@ export class TasksService {
 
       task.is_done = !task.is_done;
       return await this.taskRepository.save(task);
-    } catch (err) {}
+    } catch (err) {
+      if (err instanceof NotFoundException) {
+        throw err;
+      }
+      throw new InternalServerErrorException('Failed to update task : ', err);
+    }
   }
 
   async deleteTask(user_id: number, id: number) {
