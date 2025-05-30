@@ -9,6 +9,7 @@ import { Repository } from 'typeorm';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { ProjectsService } from 'src/projects/projects.service';
 import { UpdateTaskDto } from './dto/update-task.dto';
+import { User } from 'src/users/entity/user.entity';
 
 @Injectable()
 export class TasksService {
@@ -18,13 +19,13 @@ export class TasksService {
     private readonly projectService: ProjectsService,
   ) {}
 
-  async create(createTaskDto: CreateTaskDto): Promise<Task> {
+  async create(createTaskDto: CreateTaskDto, user: User): Promise<Task> {
     try {
       const project = await this.projectService.findProjectByProjectID(
         createTaskDto.project_id,
       );
 
-      const task = { ...createTaskDto, project };
+      const task = { ...createTaskDto, project, user };
 
       return await this.taskRepository.save(task);
     } catch (err) {
@@ -35,15 +36,18 @@ export class TasksService {
     }
   }
 
-  async findAllTasks(): Promise<Task[]> {
-    return await this.taskRepository.find();
+  async findAllTasks(user_id: number): Promise<Task[]> {
+    return await this.taskRepository.find({ where: { user_id } });
   }
 
-  async findOneTask(id: number): Promise<Task> {
-    return await this.taskRepository.findOneBy({ id });
+  async findOneTask(user_id: number, id: number): Promise<Task> {
+    return await this.taskRepository.findOne({ where: { user_id, id } });
   }
 
-  async findAllTasksByProject(project_id: number): Promise<Task[] | null> {
+  async findAllTasksByProject(
+    user_id: number,
+    project_id: number,
+  ): Promise<Task[] | null> {
     try {
       const project =
         await this.projectService.findProjectByProjectID(project_id);
@@ -51,7 +55,7 @@ export class TasksService {
         throw new NotFoundException('Project not found.');
       }
 
-      return await this.taskRepository.find({ where: { project_id } });
+      return await this.taskRepository.find({ where: { user_id, project_id } });
     } catch (err) {
       if (err instanceof NotFoundException) {
         throw err;
@@ -60,9 +64,15 @@ export class TasksService {
     }
   }
 
-  async updateTask(id: number, updateTaskDto: UpdateTaskDto): Promise<Task> {
+  async updateTask(
+    user_id: number,
+    id: number,
+    updateTaskDto: UpdateTaskDto,
+  ): Promise<Task> {
     try {
-      const task = await this.taskRepository.findOneBy({ id });
+      const task = await this.taskRepository.findOne({
+        where: { user_id, id },
+      });
       if (!task) {
         throw new NotFoundException('Task not found.');
       }
@@ -77,9 +87,11 @@ export class TasksService {
     }
   }
 
-  async updateTaskStatus(id: number): Promise<Task> {
+  async updateTaskStatus(user_id: number, id: number): Promise<Task> {
     try {
-      const task = await this.taskRepository.findOneBy({ id });
+      const task = await this.taskRepository.findOne({
+        where: { user_id, id },
+      });
       if (!task) {
         throw new NotFoundException('Task not found.');
       }
@@ -89,9 +101,11 @@ export class TasksService {
     } catch (err) {}
   }
 
-  async deleteTask(id: number) {
+  async deleteTask(user_id: number, id: number) {
     try {
-      const tasks = await this.taskRepository.findOneBy({ id });
+      const tasks = await this.taskRepository.findOne({
+        where: { user_id, id },
+      });
       if (!tasks) {
         throw new NotFoundException('Task not found');
       }
