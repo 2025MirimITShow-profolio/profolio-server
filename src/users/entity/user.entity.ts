@@ -1,15 +1,21 @@
-import { Column, Entity, PrimaryGeneratedColumn, CreateDateColumn } from 'typeorm';
+import { Task } from 'src/tasks/entity/task.entity';
+import {
+  Column,
+  Entity,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  OneToMany,
+} from 'typeorm';
 
 @Entity()
 export class User {
-
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({nullable: true})
+  @Column({ nullable: true })
   profile_image?: string;
 
-  @Column({unique: true})
+  @Column({ unique: true })
   email: string;
 
   @Column()
@@ -27,4 +33,6 @@ export class User {
   @CreateDateColumn()
   created_at: Date;
 
+  @OneToMany(() => Task, (task) => task.user)
+  tasks: Task[];
 }

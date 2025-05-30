@@ -1,4 +1,5 @@
 import { Project } from 'src/projects/entity/projects.entity';
+import { User } from 'src/users/entity/user.entity';
 import {
   Column,
   CreateDateColumn,
@@ -27,9 +28,16 @@ export class Task {
   updated_at: Date;
 
   @ManyToOne(() => Project, (project) => project.tasks, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'project_id' })
+  @JoinColumn({ name: 'project' })
   project?: Project;
 
   @Column({ name: 'project_id', nullable: true })
   project_id?: number;
+
+  @ManyToOne(() => User, (user) => user.tasks, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'user' })
+  user: User;
+
+  @Column({ name: 'user_id', nullable: false })
+  user_id: number;
 }

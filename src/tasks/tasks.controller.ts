@@ -6,46 +6,73 @@ import {
   Delete,
   Patch,
   Body,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { Task } from './entity/task.entity';
+import { AuthUser } from 'src/decorators/user.decorator';
 
-// TODO : 가드 추가
+@UseGuards(JwtAuthGuard)
 @Controller('api/tasks')
 export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
 
   @Post()
-  async create(@Body() createTaskDto: CreateTaskDto) {
-    return this.tasksService.create(createTaskDto);
+  async create(
+    @Body() createTaskDto: CreateTaskDto,
+    @Req() req,
+  ): Promise<Task> {
+    const user = req.user;
+    return this.tasksService.create(createTaskDto, user);
   }
 
   @Get()
-  async findAllTasks() {
-    return this.tasksService.findAllTasks();
+  async findAllTasks(@AuthUser('id') id: number) {
+    return this.tasksService.findAllTasks(id);
   }
 
-  @Get(':project_id')
-  async findAllTasksByProject(@Param('project_id') project_id: number) {
-    return this.tasksService.findAllTasksByProject(project_id);
+  @Get(':task_id')
+  async findOneTask(
+    @AuthUser('id') id: number,
+    @Param('task_id') task_id: number,
+  ) {
+    return this.tasksService.findOneTask(id, task_id);
   }
 
   @Patch(':task_id')
   async updateTask(
+    @AuthUser('id') id: number,
     @Param('task_id') task_id: number,
     @Body() updateTaskDto: UpdateTaskDto,
   ) {
-    return this.tasksService.updateTask(task_id, updateTaskDto);
+    return this.tasksService.updateTask(id, task_id, updateTaskDto);
   }
 
   @Patch(':task_id/status')
-  async updateTaskDone(@Param('task_id') task_id: number) {
-    return this.tasksService.updateTaskStatus(task_id);
+  async updateTaskDone(
+    @AuthUser('id') id: number,
+    @Param('task_id') task_id: number,
+  ) {
+    return this.tasksService.updateTaskStatus(id, task_id);
   }
 
   @Delete(':task_id')
-  async deleteTask(@Param('task_id') task_id: number) {
-    return this.tasksService.deleteTask(task_id);
+  async deleteTask(
+    @AuthUser('id') id: number,
+    @Param('task_id') task_id: number,
+  ) {
+    return this.tasksService.deleteTask(id, task_id);
+  }
+
+  @Get('project/:project_id')
+  async findAllTasksByProject(
+    @AuthUser('id') id: number,
+    @Param('project_id') project_id: number,
+  ) {
+    return this.tasksService.findAllTasksByProject(id, project_id);
   }
 }
