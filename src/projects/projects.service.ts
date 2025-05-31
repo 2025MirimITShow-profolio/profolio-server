@@ -6,12 +6,15 @@ import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { User } from 'src/users/entity/user.entity';
 import { ProjectTimelineDto } from './dto/project-timeline.dto';
+import { Task } from 'src/tasks/entity/task.entity';
 
 @Injectable()
 export class ProjectsService {
   constructor(
     @InjectRepository(Project)
     private projectRepository: Repository<Project>,
+    @InjectRepository(Task)
+    private taskRepository: Repository<Task>
   ) {}
 
   async createProject(
@@ -36,6 +39,30 @@ export class ProjectsService {
 
   async getAllProjects(userId: number): Promise<Project[]> {
     return this.projectRepository.find({ where: { user: { id: userId } } });
+  }
+
+  async getProgressRate(
+    userId: number
+  ): Promise<{project_id: number, progress_rate: number}[]>{
+
+    const result: {project_id: number, progress_rate: number}[] = [];
+
+    const allProjects = await this.projectRepository.find({select : ['id'], where: {user: {id: userId}}});
+
+    for(const prj of allProjects){
+      const allTasks = await this.taskRepository.count({where: {project_id: prj.id}});
+
+      if(allTasks === 0){
+        result.push({project_id: prj.id, progress_rate: 0});
+        continue;
+      }
+
+      const completedTasks = await this.taskRepository.count({where: {project_id: prj.id, is_done: true}});
+
+      result.push({project_id: prj.id, progress_rate: Math.ceil((completedTasks/allTasks)*100)});
+    }
+
+    return result;
   }
   
   async getTimeline(
