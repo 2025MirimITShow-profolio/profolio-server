@@ -25,6 +25,12 @@ export class ProjectsController {
     return this.projectsService.getAllProjects(userId);
   }
 
+  @Get('progress-rate')
+  @UseGuards(JwtAuthGuard)
+  async getProgressRate(@AuthUser('id') userId){
+    return this.projectsService.getProgressRate(userId);
+  }
+
   @Get('timeline')
   @UseGuards(JwtAuthGuard)
   async getTimeline(@AuthUser('id') userId):Promise<ProjectTimelineDto[]>{

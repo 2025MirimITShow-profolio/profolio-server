@@ -42,11 +42,6 @@ export class Project {
   @Column({ nullable: true })
   team_members: string;
 
-  // 스킬 entity 생성 후 컬럼 추가 필요
-  // @ManyToMany(()=>Skill, (skill)=>skill.project_id)
-  // @JoinTable()
-  // skill_id: Skill[];
-
   @CreateDateColumn()
   created_at: Date;
 
