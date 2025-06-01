@@ -6,6 +6,7 @@ import {
 import { User } from './entity/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -27,6 +28,30 @@ export class UsersService {
         throw err;
       }
       throw new InternalServerErrorException('Failed to retrieve user');
+    }
+  }
+
+  async updateUserInfo(
+    id: number,
+    updateUserDto: UpdateUserDto,
+  ): Promise<User> {
+    try {
+      const user = await this.userRepository.findOneBy({ id });
+      if (!user) {
+        throw new NotFoundException('User not found.');
+      }
+
+      const updatedUser = {
+        ...user,
+        ...updateUserDto,
+      };
+
+      return await this.userRepository.save(updatedUser);
+    } catch (err) {
+      if (err instanceof NotFoundException) {
+        throw err;
+      }
+      throw new InternalServerErrorException('Failed to update user');
     }
   }
 }
