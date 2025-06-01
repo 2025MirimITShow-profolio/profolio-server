@@ -34,5 +34,5 @@ export class User {
   created_at: Date;
 
   @OneToMany(() => Task, (task) => task.user)
-  tasks: Task[];
+  tasks?: Task[];
 }
