@@ -32,6 +32,7 @@ import { typeORMConfig } from './ormconfig';
     AiFeedbacksModule,
     SkillsModule,
     AuthModule,
+    SharedProjectsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
