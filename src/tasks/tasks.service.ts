@@ -10,6 +10,7 @@ import { CreateTaskDto } from './dto/create-task.dto';
 import { ProjectsService } from 'src/projects/projects.service';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { User } from 'src/users/entity/user.entity';
+import { TaskCountsResponseDto } from './dto/task-counts-response.dto';
 
 @Injectable()
 export class TasksService {
@@ -137,5 +138,19 @@ export class TasksService {
       }
       throw new InternalServerErrorException('Failed to delete task');
     }
+  }
+
+  async taskCounts(user_id: number): Promise<TaskCountsResponseDto> {
+    const inprogressTasks = await this.taskRepository.find({
+      where: { user_id, is_done: false },
+    });
+    const completedTasks = await this.taskRepository.find({
+      where: { user_id, is_done: true },
+    });
+
+    return {
+      in_progress: inprogressTasks.length,
+      completed: completedTasks.length,
+    };
   }
 }

@@ -30,6 +30,11 @@ export class TasksController {
     return this.tasksService.create(createTaskDto, user);
   }
 
+  @Get('counts')
+  async taskCounts(@AuthUser('id') id: number) {
+    return this.tasksService.taskCounts(id);
+  }
+
   @Get()
   async findAllTasks(@AuthUser('id') id: number) {
     return this.tasksService.findAllTasks(id);
