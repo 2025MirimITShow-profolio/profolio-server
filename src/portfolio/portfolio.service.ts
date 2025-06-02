@@ -29,9 +29,13 @@ export class PortfolioService {
     projectId: number
   ): Promise<string>{
     const portfolio = await this.portfolioRepository.findOneBy({project_id: projectId});
+    
+    if(!portfolio){
+      return null;
+    }
+
     const filePath = path.join(__dirname, '..', '..', portfolio.pdf_url);
-    console.log(filePath);
-    return filePath;
+    return (filePath)? filePath : null;
   }
 
   async deletePortfolio(

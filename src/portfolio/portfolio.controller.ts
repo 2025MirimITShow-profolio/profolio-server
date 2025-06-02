@@ -33,6 +33,13 @@ export class PortfolioController {
   @Get(':project_id')
   async getPortfolio(@Param('project_id') project_id, @Res() res: Response){
     const filePath = await this.portfolioService.getPortfolio(project_id);
+
+    if (!filePath) {
+      return res.status(200).json({
+        success: false,
+      });
+    }
+    
     res.sendFile(filePath);
   }
 
