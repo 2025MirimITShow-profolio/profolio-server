@@ -25,10 +25,19 @@ export class PortfolioService {
     return this.portfolioRepository.save(portfolio);
   }
 
-  async deletePortfolio(
+  async getPortfolio(
     projectId: number
+  ): Promise<string>{
+    const portfolio = await this.portfolioRepository.findOneBy({project_id: projectId});
+    const filePath = path.join(__dirname, '..', '..', portfolio.pdf_url);
+    console.log(filePath);
+    return filePath;
+  }
+
+  async deletePortfolio(
+    portfolioId: number
   ){
-    const portfolio = await this.portfolioRepository.findOneBy({id:projectId});
+    const portfolio = await this.portfolioRepository.findOneBy({id:portfolioId});
     
     const filePath = path.join(__dirname, '..', '..', 'uploads', 'pdfs', path.basename(portfolio.pdf_url));
         // path.basename(portfolio.pdf_url) : 파일명만 추출

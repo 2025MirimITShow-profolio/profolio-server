@@ -1,7 +1,8 @@
-import { Body, Controller, Delete, Param, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { PortfolioService } from './portfolio.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
+import { Response } from 'express';
 import { extname } from 'path';
 
 @Controller('api/portfolio')
@@ -27,6 +28,12 @@ export class PortfolioController {
     @Body('project_id') projectId: number,
 ){
     return this.portfolioService.uploadPortfolio(file, projectId);
+  }
+
+  @Get(':project_id')
+  async getPortfolio(@Param('project_id') project_id, @Res() res: Response){
+    const filePath = await this.portfolioService.getPortfolio(project_id);
+    res.sendFile(filePath);
   }
 
   @Delete(':portfolio_id')
