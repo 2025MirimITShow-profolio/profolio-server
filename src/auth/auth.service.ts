@@ -16,44 +16,42 @@ export class AuthService {
   ) {}
 
   async createUser(createUserDto: CreateUserDto): Promise<User> {
-
     const hashedPassword = await this.createPassword(createUserDto.password);
 
-    const newUser = this.userRepository.create({ 
-      ...createUserDto, 
-      password: hashedPassword 
+    const newUser = this.userRepository.create({
+      ...createUserDto,
+      password: hashedPassword,
     });
-        
-    return this.userRepository.save(newUser);
+
+    return await this.userRepository.save(newUser);
   }
 
   async createPassword(plainPassword: string): Promise<string> {
-        return bcrypt.hash(plainPassword, 10);
+    return bcrypt.hash(plainPassword, 10);
   }
 
   async findById(id: number): Promise<User> {
-    return this.userRepository.findOneBy({id});
+    return await this.userRepository.findOneBy({ id });
   }
 
-  async validateUser(email: string, password: string){
+  async validateUser(email: string, password: string) {
+    const user = await this.userRepository.findOne({ where: { email } });
 
-    const user = await this.userRepository.findOne({where: {email}});
-
-    if(!user)
-      throw new BadRequestException('잘못된 이메일');
+    if (!user) throw new BadRequestException('잘못된 이메일');
 
     const isPasswordMath = await compare(password, user.password);
 
-    if(!isPasswordMath)
-      throw new BadRequestException('잘못된 비밀번호');
+    if (!isPasswordMath) throw new BadRequestException('잘못된 비밀번호');
 
     return user;
   }
 
-  async logIn(user){
+  async logIn(user) {
     return {
-      accessToken: this.jwtService.sign({ userId: user.id, email: user.email }),
+      accessToken: await this.jwtService.sign({
+        sub: user.id,
+        email: user.email,
+      }),
     };
   }
-
 }

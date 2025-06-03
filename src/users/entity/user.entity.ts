@@ -1,3 +1,4 @@
+import { SharedProject } from 'src/shared_projects/entity/shared_projects.entity';
 import { Task } from 'src/tasks/entity/task.entity';
 import {
   Column,
@@ -35,4 +36,7 @@ export class User {
 
   @OneToMany(() => Task, (task) => task.user)
   tasks?: Task[];
+
+  @OneToMany(() => SharedProject, (sharedProjects) => sharedProjects.project)
+  sharedProjects?: SharedProject[];
 }

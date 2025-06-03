@@ -1,3 +1,4 @@
+import { SharedProject } from 'src/shared_projects/entity/shared_projects.entity';
 import { Task } from 'src/tasks/entity/task.entity';
 import { User } from 'src/users/entity/user.entity';
 import {
@@ -18,8 +19,11 @@ export class Project {
   id: number;
 
   @ManyToOne(() => User)
-  @JoinColumn({ name: 'user_id' })
+  @JoinColumn({ name: 'user' })
   user: User;
+
+  @Column()
+  user_id: number;
 
   @Column()
   title: string;
@@ -46,5 +50,8 @@ export class Project {
   created_at: Date;
 
   @OneToMany(() => Task, (task) => task.project_id)
-  tasks: Task[];
+  tasks?: Task[];
+
+  @OneToMany(() => SharedProject, (sharedProject) => sharedProject.project)
+  sharedProjects?: SharedProject[];
 }

@@ -14,7 +14,7 @@ export class ProjectsService {
     @InjectRepository(Project)
     private projectRepository: Repository<Project>,
     @InjectRepository(Task)
-    private taskRepository: Repository<Task>
+    private taskRepository: Repository<Task>,
   ) {}
 
   async createProject(
@@ -25,6 +25,7 @@ export class ProjectsService {
       ...createProjectDto,
       start_date: new Date(createProjectDto.start_date),
       end_date: new Date(createProjectDto.end_date),
+      user_id: user.id,
       user: user,
     });
 
@@ -42,59 +43,68 @@ export class ProjectsService {
   }
 
   async getProgressRate(
-    userId: number
-  ): Promise<{project_id: number, progress_rate: number}[]>{
+    userId: number,
+  ): Promise<{ project_id: number; progress_rate: number }[]> {
+    const result: { project_id: number; progress_rate: number }[] = [];
 
-    const result: {project_id: number, progress_rate: number}[] = [];
+    const allProjects = await this.projectRepository.find({
+      select: ['id'],
+      where: { user: { id: userId } },
+    });
 
-    const allProjects = await this.projectRepository.find({select : ['id'], where: {user: {id: userId}}});
+    for (const prj of allProjects) {
+      const allTasks = await this.taskRepository.count({
+        where: { project_id: prj.id },
+      });
 
-    for(const prj of allProjects){
-      const allTasks = await this.taskRepository.count({where: {project_id: prj.id}});
-
-      if(allTasks === 0){
-        result.push({project_id: prj.id, progress_rate: 0});
+      if (allTasks === 0) {
+        result.push({ project_id: prj.id, progress_rate: 0 });
         continue;
       }
 
-      const completedTasks = await this.taskRepository.count({where: {project_id: prj.id, is_done: true}});
+      const completedTasks = await this.taskRepository.count({
+        where: { project_id: prj.id, is_done: true },
+      });
 
-      result.push({project_id: prj.id, progress_rate: Math.ceil((completedTasks/allTasks)*100)});
+      result.push({
+        project_id: prj.id,
+        progress_rate: Math.ceil((completedTasks / allTasks) * 100),
+      });
     }
 
     return result;
   }
-  
-  async getTimeline(
-    userId: number
-  ): Promise<ProjectTimelineDto[]> {
-    return await this.projectRepository.find({select:['id', 'title', 'start_date', 'end_date'], where: {user:{id:userId}}});
+
+  async getTimeline(userId: number): Promise<ProjectTimelineDto[]> {
+    return await this.projectRepository.find({
+      select: ['id', 'title', 'start_date', 'end_date'],
+      where: { user: { id: userId } },
+    });
   }
 
   async getCounts(
-    userId: number
-  ): Promise<{ in_progress: number; completed: number }>{
+    userId: number,
+  ): Promise<{ in_progress: number; completed: number }> {
     const today = new Date();
 
     const inProgressCnt = await this.projectRepository.count({
-      where: {user: {id: userId}, end_date: MoreThan(today)}
+      where: { user: { id: userId }, end_date: MoreThan(today) },
     });
 
     const completedCnt = await this.projectRepository.count({
-      where: {user: {id: userId}, end_date: LessThanOrEqual(today)}
+      where: { user: { id: userId }, end_date: LessThanOrEqual(today) },
     });
 
     return {
       in_progress: inProgressCnt,
-      completed: completedCnt
+      completed: completedCnt,
     };
   }
 
-  async getTitles(
-    userId: number
-  ): Promise<{ id: number, title: string }[]>{
+  async getTitles(userId: number): Promise<{ id: number; title: string }[]> {
     return await this.projectRepository.find({
-      select: ['id', 'title'], where: {user:{id:userId}}
+      select: ['id', 'title'],
+      where: { user: { id: userId } },
     });
   }
 
@@ -123,10 +133,10 @@ export class ProjectsService {
     return this.projectRepository.save(newProject);
   }
 
-  async deleteProject(
-    projectId: number,
-    userId: number
-  ){
-    await this.projectRepository.delete({id: projectId, user: {id: userId}});
+  async deleteProject(projectId: number, userId: number) {
+    await this.projectRepository.delete({
+      id: projectId,
+      user: { id: userId },
+    });
   }
 }
