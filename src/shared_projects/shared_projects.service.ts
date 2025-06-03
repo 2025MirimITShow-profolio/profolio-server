@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   ConflictException,
   Injectable,
@@ -26,25 +27,26 @@ export class SharedProjectsService {
   async create(
     user_id: number,
     createSharedProjectDto: CreateSharedProjectDto,
-  ) {
+  ): Promise<SharedProject> {
     try {
       const project_id = createSharedProjectDto.project_id;
-      const existingProject = await this.sharedProjectRepository.findOneBy({
-        project_id,
-      });
-      if (existingProject) {
-        throw new ConflictException('Project already shared');
-      }
-
       const user = await this.userService.findUser(user_id);
-      if (!user) {
-        throw new NotFoundException('User not found');
-      }
 
       const project =
         await this.projectsService.findProjectByProjectID(project_id);
       if (!project) {
         throw new NotFoundException('Project not found');
+      }
+
+      if (project.user !== user) {
+        throw new BadRequestException('Project is not owned by the user');
+      }
+
+      const existingProject = await this.sharedProjectRepository.findOne({
+        where: { user_id, project_id },
+      });
+      if (existingProject) {
+        throw new ConflictException('Project already shared');
       }
 
       const sharedProject = {
@@ -59,11 +61,16 @@ export class SharedProjectsService {
       console.log(err);
       if (
         err instanceof NotFoundException ||
-        err instanceof ConflictException
+        err instanceof ConflictException ||
+        BadRequestException
       ) {
         throw err;
       }
       throw new InternalServerErrorException('Failed to share project');
     }
+  }
+
+  async findSharedProjectsByUserId(user_id): Promise<SharedProject[]> {
+    return this.sharedProjectRepository.find({ where: { user_id } });
   }
 }
