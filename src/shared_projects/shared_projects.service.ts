@@ -14,6 +14,7 @@ import { Repository } from 'typeorm';
 import { UsersService } from 'src/users/users.service';
 import { ProjectsService } from 'src/projects/projects.service';
 import { CreateSharedProjectDto } from './dto/create-shraed_project.dto';
+import { Project } from 'src/projects/entity/projects.entity';
 
 @Injectable()
 export class SharedProjectsService {
@@ -37,8 +38,7 @@ export class SharedProjectsService {
       if (!project) {
         throw new NotFoundException('Project not found');
       }
-
-      if (project.user !== user) {
+      if (project.user_id !== user_id) {
         throw new BadRequestException('Project is not owned by the user');
       }
 
@@ -70,7 +70,39 @@ export class SharedProjectsService {
     }
   }
 
-  async findSharedProjectsByUserId(user_id): Promise<SharedProject[]> {
-    return this.sharedProjectRepository.find({ where: { user_id } });
+  async findSharedProjectsByUserId(user_id): Promise<Project[]> {
+    const user = await this.userService.findUser(user_id);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const sharedProeject = await this.sharedProjectRepository.find({
+      where: { user_id },
+      relations: ['project'],
+    });
+    const sharedProejects = sharedProeject.map((project) => project.project);
+
+    return sharedProejects;
+  }
+
+  async stopSharingProject(user_id: number, project_id: number) {
+    try {
+      const sharedProject = await this.sharedProjectRepository.findOneBy({
+        user_id,
+        project_id,
+      });
+
+      if (!sharedProject) {
+        throw new NotFoundException('Shared project not found');
+      }
+      const sharedProjectId = sharedProject.id;
+
+      return await this.sharedProjectRepository.delete(sharedProjectId);
+    } catch (err) {
+      if (err instanceof NotFoundException) {
+        throw err;
+      }
+      throw new InternalServerErrorException('Failed to delete shared project');
+    }
   }
 }

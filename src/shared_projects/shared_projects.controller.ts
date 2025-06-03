@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { SharedProjectsService } from './shared_projects.service';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { AuthUser } from 'src/decorators/user.decorator';
@@ -25,5 +33,13 @@ export class SharedProjectsController {
   @Get(':user_id')
   async findOtherSharedProjects(@Param('user_id') user_id: number) {
     return this.sharedProjectsService.findSharedProjectsByUserId(user_id);
+  }
+
+  @Delete(':project_id/stop')
+  async stopSharingProject(
+    @AuthUser('id') id: number,
+    @Param('project_id') project_id: number,
+  ) {
+    return this.sharedProjectsService.stopSharingProject(id, project_id);
   }
 }

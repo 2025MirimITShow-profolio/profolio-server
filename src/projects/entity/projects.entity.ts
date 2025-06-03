@@ -19,8 +19,11 @@ export class Project {
   id: number;
 
   @ManyToOne(() => User)
-  @JoinColumn({ name: 'user_id' })
+  @JoinColumn({ name: 'user' })
   user: User;
+
+  @Column()
+  user_id: number;
 
   @Column()
   title: string;
