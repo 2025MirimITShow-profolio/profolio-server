@@ -11,6 +11,7 @@ import { ProjectsService } from 'src/projects/projects.service';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { User } from 'src/users/entity/user.entity';
 import { TaskCountsResponseDto } from './dto/task-counts-response.dto';
+import { DailyTasksService } from 'src/daily_tasks/daily_tasks.service';
 
 @Injectable()
 export class TasksService {
@@ -18,6 +19,7 @@ export class TasksService {
     @InjectRepository(Task)
     private readonly taskRepository: Repository<Task>,
     private readonly projectService: ProjectsService,
+    private readonly dailyTaskService: DailyTasksService,
   ) {}
 
   async create(createTaskDto: CreateTaskDto, user: User): Promise<Task> {
@@ -113,6 +115,12 @@ export class TasksService {
       }
 
       task.is_done = !task.is_done;
+      if (task.is_done) {
+        await this.dailyTaskService.incrementCount(user_id);
+      } else {
+        await this.dailyTaskService.decrementCount(user_id);
+      }
+
       return await this.taskRepository.save(task);
     } catch (err) {
       if (err instanceof NotFoundException) {

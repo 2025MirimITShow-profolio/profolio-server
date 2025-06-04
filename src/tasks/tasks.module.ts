@@ -3,12 +3,17 @@ import { TasksService } from './tasks.service';
 import { TasksController } from './tasks.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Task } from './entity/task.entity';
-import { ProjectsService } from 'src/projects/projects.service';
 import { Project } from 'src/projects/entity/projects.entity';
+import { ProjectsModule } from 'src/projects/projects.module';
+import { DailyTasksModule } from 'src/daily_tasks/daily_tasks.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Task, Project])],
+  imports: [
+    TypeOrmModule.forFeature([Task, Project]),
+    ProjectsModule,
+    DailyTasksModule,
+  ],
   controllers: [TasksController],
-  providers: [TasksService, ProjectsService],
+  providers: [TasksService],
 })
 export class TasksModule {}

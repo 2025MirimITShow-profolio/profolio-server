@@ -28,7 +28,6 @@ import { typeORMConfig } from './ormconfig';
     TasksModule,
     DailyTasksModule,
     SharedProjectsModule,
-    SharedProjectsModule,
     AiFeedbacksModule,
     SkillsModule,
     AuthModule,
