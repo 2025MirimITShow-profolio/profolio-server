@@ -43,8 +43,8 @@ export class PortfolioController {
     res.sendFile(filePath);
   }
 
-  @Delete(':portfolio_id')
-  async deletePortfolio(@Param('portfolio_id') portfolio_id){
-    this.portfolioService.deletePortfolio(portfolio_id);
+  @Delete(':project_id')
+  async deletePortfolio(@Param('project_id') project_id){
+    this.portfolioService.deletePortfolio(project_id);
   }
 }
