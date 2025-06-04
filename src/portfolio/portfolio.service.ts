@@ -39,9 +39,9 @@ export class PortfolioService {
   }
 
   async deletePortfolio(
-    portfolioId: number
+    projectId: number
   ){
-    const portfolio = await this.portfolioRepository.findOneBy({id:portfolioId});
+    const portfolio = await this.portfolioRepository.findOneBy({project: {id:projectId}});
     
     const filePath = path.join(__dirname, '..', '..', 'uploads', 'pdfs', path.basename(portfolio.pdf_url));
         // path.basename(portfolio.pdf_url) : 파일명만 추출
