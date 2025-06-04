@@ -1,3 +1,4 @@
+import { DailyTask } from 'src/daily_tasks/entity/daily_tasks.entity';
 import { SharedProject } from 'src/shared_projects/entity/shared_projects.entity';
 import { Task } from 'src/tasks/entity/task.entity';
 import {
@@ -37,6 +38,9 @@ export class User {
   @OneToMany(() => Task, (task) => task.user)
   tasks?: Task[];
 
-  @OneToMany(() => SharedProject, (sharedProjects) => sharedProjects.project)
+  @OneToMany(() => SharedProject, (sharedProjects) => sharedProjects.user)
   sharedProjects?: SharedProject[];
+
+  @OneToMany(() => DailyTask, (dailyTasks) => dailyTasks.user)
+  dailyTasks?: DailyTask[];
 }
