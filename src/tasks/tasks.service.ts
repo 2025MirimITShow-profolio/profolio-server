@@ -109,7 +109,7 @@ export class TasksService {
       if (!task) {
         throw new NotFoundException('Task not found.');
       }
-      await this.taskRepository.save(updateTaskDto);
+      await this.taskRepository.update({id, user_id}, updateTaskDto);
 
       return await this.taskRepository.findOneBy({ id });
     } catch (err) {
