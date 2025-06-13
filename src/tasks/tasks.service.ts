@@ -38,8 +38,7 @@ export class TasksService {
         createTaskDto.project_id,
       );
 
-      const date = await this.getFormatDate();
-      const task = { ...createTaskDto, date, project, user, user_id: user.id };
+      const task = { ...createTaskDto, project, user, user_id: user.id };
 
       return await this.taskRepository.save(task);
     } catch (err) {
