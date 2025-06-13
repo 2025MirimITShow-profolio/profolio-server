@@ -5,6 +5,9 @@ export class CreateTaskDto {
   @IsString()
   title: string;
 
+  @IsNotEmpty()
+  date: string;
+
   @IsOptional()
   project_id;
 }
