@@ -8,6 +8,7 @@ import {
   Body,
   UseGuards,
   Req,
+  Query,
 } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { CreateTaskDto } from './dto/create-task.dto';
@@ -33,6 +34,14 @@ export class TasksController {
   @Get('counts')
   async taskCounts(@AuthUser('id') id: number) {
     return this.tasksService.taskCounts(id);
+  }
+
+  @Get()
+  async findTaskByDate(
+    @AuthUser('id') id: number,
+    @Query('date') date: string,
+  ) {
+    return this.tasksService.findTaskByDate(id, date);
   }
 
   @Get()

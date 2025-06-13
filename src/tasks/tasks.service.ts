@@ -22,13 +22,24 @@ export class TasksService {
     private readonly dailyTaskService: DailyTasksService,
   ) {}
 
+  async getFormatDate() {
+    const now = new Date();
+
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+
+    return `${year}${month}${day}`;
+  }
+
   async create(createTaskDto: CreateTaskDto, user: User): Promise<Task> {
     try {
       const project = await this.projectService.findProjectByProjectID(
         createTaskDto.project_id,
       );
 
-      const task = { ...createTaskDto, project, user, user_id: user.id };
+      const date = await this.getFormatDate();
+      const task = { ...createTaskDto, date, project, user, user_id: user.id };
 
       return await this.taskRepository.save(task);
     } catch (err) {
@@ -60,6 +71,10 @@ export class TasksService {
       }
       throw new InternalServerErrorException('Failed to retrieve task : ', err);
     }
+  }
+
+  async findTaskByDate(user_id: number, date: string): Promise<Task[]> {
+    return await this.taskRepository.find({ where: { date } });
   }
 
   async findAllTasksByProject(

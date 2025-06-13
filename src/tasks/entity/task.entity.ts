@@ -21,6 +21,9 @@ export class Task {
   @Column({ name: 'is_done', nullable: false, default: false })
   is_done: boolean;
 
+  @Column({ name: 'date', nullable: false })
+  date: string;
+
   @CreateDateColumn()
   created_at: Date;
 
