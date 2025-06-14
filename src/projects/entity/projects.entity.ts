@@ -46,6 +46,9 @@ export class Project {
   @Column({ nullable: true })
   team_members: string;
 
+  @Column({ nullable: true })
+  skills: string;
+
   @CreateDateColumn()
   created_at: Date;
 
