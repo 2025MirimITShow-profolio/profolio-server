@@ -66,7 +66,15 @@ export class ProgressLogController {
       }
     }
   }
-  
+
+  // 프로젝트별 진행과정 조회
+  @Get('project/:project_id')
+  async getProgressByProjectId(
+    @Param('project_id') project_id: string,
+  ) {
+    return this.progressLogService.getProgressByProjectId(project_id);
+  }
+
   // patch 진행과정 수정
   
   // delete 진행과정 삭제
