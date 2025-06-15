@@ -1,3 +1,5 @@
+import { AiFeedback } from 'src/ai_feedbacks/ai_feedbacks.entity';
+import { Progress_log } from 'src/progress_log/progress_log.entity';
 import { SharedProject } from 'src/shared_projects/entity/shared_projects.entity';
 import { Task } from 'src/tasks/entity/task.entity';
 import { User } from 'src/users/entity/user.entity';
@@ -10,6 +12,7 @@ import {
   ManyToMany,
   ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -57,4 +60,10 @@ export class Project {
 
   @OneToMany(() => SharedProject, (sharedProject) => sharedProject.project)
   sharedProjects?: SharedProject[];
+
+  @OneToOne(() => AiFeedback, (aifeedbacks) => aifeedbacks.project)
+  ai_feedbacks?: AiFeedback;
+
+  @OneToMany(() => Progress_log, (progress_log) => progress_log.project)
+  progress_log?: Progress_log[]
 }
