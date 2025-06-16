@@ -74,4 +74,9 @@ export class DailyTasksService {
       1,
     );
   }
+
+  async findByMonth(user_id: number, date: string): Promise<DailyTask[]> {
+    const dailyTasks = await this.findAll(user_id);
+    return dailyTasks.filter((task) => task.date.startsWith(date));
+  }
 }
