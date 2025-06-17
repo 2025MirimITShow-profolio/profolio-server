@@ -34,16 +34,16 @@ export class Project {
   @Column()
   description: string;
 
-  @Column()
+  @Column({ nullable: true })
   start_date: Date;
 
-  @Column()
+  @Column({ nullable: true })
   end_date: Date;
 
   @Column({ nullable: true })
   links: string;
 
-  @Column()
+  @Column({ nullable: true })
   color: string;
 
   @Column({ nullable: true })
