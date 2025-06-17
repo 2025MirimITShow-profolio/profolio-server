@@ -49,6 +49,12 @@ export class ProjectsController {
     return this.projectsService.getTitles(userId);
   }
 
+  @Get('shared')
+  @UseGuards(JwtAuthGuard)
+  async getShared(@AuthUser('id') userId){
+    return this.projectsService.getShared(userId);
+  }
+
   @Get(':project_id')
   @UseGuards(JwtAuthGuard)
   async getProject(@Param('project_id') project_id, @AuthUser('id') userId):Promise<Project>{

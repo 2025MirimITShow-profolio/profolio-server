@@ -107,6 +107,12 @@ export class ProjectsService {
     });
   }
 
+  async getShared(userId: number): Promise<Project[]>{
+    return await this.projectRepository.find({
+      where: {user_id: userId, is_shared: true}
+    })
+  };
+
   async getProject(projectId: number, userId: number): Promise<Project> {
     console.log(projectId+', '+userId)
     return this.projectRepository.findOne({

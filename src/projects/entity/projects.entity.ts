@@ -40,6 +40,9 @@ export class Project {
   @Column({ nullable: true })
   end_date: Date;
 
+  @Column({nullable: true, default: false})
+  is_shared: boolean;
+
   @Column({ nullable: true })
   links: string;
 
