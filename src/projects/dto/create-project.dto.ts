@@ -9,10 +9,12 @@ export class CreateProjectDto {
   @IsString()
   description: string;
 
+  @IsOptional()
   @IsNotEmpty()
   @IsDateString()
   start_date: string;
 
+  @IsOptional()
   @IsNotEmpty()
   @IsDateString()
   end_date: string;

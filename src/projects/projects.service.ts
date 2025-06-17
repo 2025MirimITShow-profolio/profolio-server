@@ -21,10 +21,9 @@ export class ProjectsService {
     createProjectDto: CreateProjectDto,
     user: User,
   ): Promise<Project> {
+
     const newProject = this.projectRepository.create({
       ...createProjectDto,
-      start_date: new Date(createProjectDto.start_date),
-      end_date: new Date(createProjectDto.end_date),
       user_id: user.id,
       user: user,
     });
