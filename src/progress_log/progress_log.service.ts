@@ -74,6 +74,11 @@ export class ProgressLogService {
     return this.ProgressRepository.findOne({ where: { id: progress_id } });
   }
 
+  // 프로젝트별 진행과정 조회
+  async getProgressByProjectId(projectId: string): Promise<Progress_log[]>{
+    return this.ProgressRepository.find({where: {projectId: projectId}})
+  }
+
   // 진행과정 전체 조회
   async getAllProgress(): Promise<Progress_log[]> {
     return this.ProgressRepository.find();

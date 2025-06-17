@@ -39,7 +39,7 @@ export class ProjectsService {
   }
 
   async getAllProjects(userId: number): Promise<Project[]> {
-    return this.projectRepository.find({ where: { user: { id: userId } } });
+    return this.projectRepository.find({ where: { user_id: userId } });
   }
 
   async getProgressRate(
@@ -49,7 +49,7 @@ export class ProjectsService {
 
     const allProjects = await this.projectRepository.find({
       select: ['id'],
-      where: { user: { id: userId } },
+      where: { user_id: userId },
     });
 
     for (const prj of allProjects) {
@@ -78,7 +78,7 @@ export class ProjectsService {
   async getTimeline(userId: number): Promise<ProjectTimelineDto[]> {
     return await this.projectRepository.find({
       select: ['id', 'title', 'start_date', 'end_date'],
-      where: { user: { id: userId } },
+      where: { user_id: userId },
     });
   }
 
@@ -92,7 +92,7 @@ export class ProjectsService {
     });
 
     const completedCnt = await this.projectRepository.count({
-      where: { user: { id: userId }, end_date: LessThanOrEqual(today) },
+      where: { user_id: userId , end_date: LessThanOrEqual(today) },
     });
 
     return {
@@ -104,13 +104,14 @@ export class ProjectsService {
   async getTitles(userId: number): Promise<{ id: number; title: string }[]> {
     return await this.projectRepository.find({
       select: ['id', 'title'],
-      where: { user: { id: userId } },
+      where: { user_id: userId },
     });
   }
 
   async getProject(projectId: number, userId: number): Promise<Project> {
+    console.log(projectId+', '+userId)
     return this.projectRepository.findOne({
-      where: { id: projectId, user: { id: userId } },
+      where: { id: projectId, user_id: userId },
     });
   }
 
@@ -120,7 +121,7 @@ export class ProjectsService {
     updateProjectDto: UpdateProjectDto,
   ): Promise<Project> {
     const project = await this.projectRepository.findOne({
-      where: { id: projectId, user: { id: userId } },
+      where: { id: projectId, user_id: userId },
     });
 
     const newProject = {
@@ -136,7 +137,7 @@ export class ProjectsService {
   async deleteProject(projectId: number, userId: number) {
     await this.projectRepository.delete({
       id: projectId,
-      user: { id: userId },
+      user_id: userId
     });
   }
 }

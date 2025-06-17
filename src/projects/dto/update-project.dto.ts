@@ -29,4 +29,8 @@ export class UpdateProjectDto {
   @IsString()
   team_members?: string;
 
+  @IsOptional()
+  @IsString()
+  skills?: string;
+
 }
