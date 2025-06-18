@@ -22,7 +22,7 @@ export class TasksService {
     private readonly dailyTaskService: DailyTasksService,
   ) {}
 
-  async getFormatDate() {
+  async getFormatDate(): Promise<string> {
     const now = new Date();
 
     const year = now.getFullYear();
@@ -38,7 +38,8 @@ export class TasksService {
         createTaskDto.project_id,
       );
 
-      const task = { ...createTaskDto, project, user, user_id: user.id };
+      const date = await this.getFormatDate();
+      const task = { ...createTaskDto, project, date, user, user_id: user.id };
 
       return await this.taskRepository.save(task);
     } catch (err) {
@@ -59,6 +60,7 @@ export class TasksService {
       const task = await this.taskRepository.findOne({
         where: { user_id, id },
       });
+      console.log(task);
       if (!task) {
         throw new NotFoundException('Task not found');
       }
@@ -108,7 +110,7 @@ export class TasksService {
       if (!task) {
         throw new NotFoundException('Task not found.');
       }
-      await this.taskRepository.update({id, user_id}, updateTaskDto);
+      await this.taskRepository.update({ id, user_id }, updateTaskDto);
 
       return await this.taskRepository.findOneBy({ id });
     } catch (err) {
@@ -121,9 +123,9 @@ export class TasksService {
 
   async updateTaskStatus(user_id: number, id: number): Promise<Task> {
     try {
-      const task = await this.taskRepository.findOne({
-        where: { user_id, id },
-      });
+      console.log(user_id, id);
+      const task = await this.taskRepository.findOneBy({ user_id, id });
+      console.log(task);
       if (!task) {
         throw new NotFoundException('Task not found.');
       }

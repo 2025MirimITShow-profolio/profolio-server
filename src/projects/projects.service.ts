@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Project } from './entity/projects.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LessThanOrEqual, MoreThan, Repository } from 'typeorm';
@@ -21,7 +21,6 @@ export class ProjectsService {
     createProjectDto: CreateProjectDto,
     user: User,
   ): Promise<Project> {
-
     const newProject = this.projectRepository.create({
       ...createProjectDto,
       user_id: user.id,
@@ -91,7 +90,7 @@ export class ProjectsService {
     });
 
     const completedCnt = await this.projectRepository.count({
-      where: { user_id: userId , end_date: LessThanOrEqual(today) },
+      where: { user_id: userId, end_date: LessThanOrEqual(today) },
     });
 
     return {
@@ -107,14 +106,14 @@ export class ProjectsService {
     });
   }
 
-  async getShared(userId: number): Promise<Project[]>{
+  async getShared(userId: number): Promise<Project[]> {
     return await this.projectRepository.find({
-      where: {user_id: userId, is_shared: true}
-    })
-  };
+      where: { user_id: userId, is_shared: true },
+    });
+  }
 
   async getProject(projectId: number, userId: number): Promise<Project> {
-    console.log(projectId+', '+userId)
+    console.log(projectId + ', ' + userId);
     return this.projectRepository.findOne({
       where: { id: projectId, user_id: userId },
     });
@@ -139,10 +138,20 @@ export class ProjectsService {
     return this.projectRepository.save(newProject);
   }
 
+  async updateShared(user_id: number, id: number): Promise<Project> {
+    const project = await this.getProject(id, user_id);
+    if (!project) {
+      throw new NotFoundException('Like not found');
+    }
+
+    project.is_shared = !project.is_shared;
+    return await this.projectRepository.save(project);
+  }
+
   async deleteProject(projectId: number, userId: number) {
     await this.projectRepository.delete({
       id: projectId,
-      user_id: userId
+      user_id: userId,
     });
   }
 }
