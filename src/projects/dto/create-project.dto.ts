@@ -33,6 +33,10 @@ export class CreateProjectDto {
 
   @IsOptional()
   @IsString()
+  member_profile?: string;
+
+  @IsOptional()
+  @IsString()
   skills?: string;
 
 }
