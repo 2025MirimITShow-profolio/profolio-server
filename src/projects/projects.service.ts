@@ -23,8 +23,8 @@ export class ProjectsService {
   ): Promise<Project> {
     const newProject = this.projectRepository.create({
       ...createProjectDto,
-      team_members: user.name + "," + createProjectDto.team_members,
-      member_profile: user.profile_image + "," + createProjectDto.member_profile,
+      team_members: user.name,
+      member_profile: user.profile_image,
       user_id: user.id,
       user: user,
     });
