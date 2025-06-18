@@ -124,21 +124,24 @@ export class TasksService {
   async updateTaskStatus(user_id: number, id: number): Promise<Task> {
     try {
       console.log(user_id, id);
-      const task = await this.taskRepository.findOneBy({ user_id, id });
+      const task = await this.taskRepository.findOne({where: {user_id:user_id, id : id} });
       console.log(task);
       if (!task) {
         throw new NotFoundException('Task not found.');
       }
 
       task.is_done = !task.is_done;
+      console.log(task.is_done);
       if (task.is_done) {
         await this.dailyTaskService.incrementCount(user_id);
       } else {
         await this.dailyTaskService.decrementCount(user_id);
       }
+      
 
       return await this.taskRepository.save(task);
     } catch (err) {
+      console.error(err)
       if (err instanceof NotFoundException) {
         throw err;
       }

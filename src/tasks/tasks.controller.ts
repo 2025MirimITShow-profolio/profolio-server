@@ -35,6 +35,11 @@ export class TasksController {
   async taskCounts(@AuthUser('id') id: number) {
     return this.tasksService.taskCounts(id);
   }
+  
+  @Get('all')
+  async findAllTasks(@AuthUser('id') id: number) {
+    return this.tasksService.findAllTasks(id);
+  }
 
   @Get(':task_id')
   async findOneTask(
@@ -44,6 +49,15 @@ export class TasksController {
     return this.tasksService.findOneTask(id, task_id);
   }
 
+  @Patch(':task_id/status')
+  async updateTaskDone(
+    @AuthUser('id') id: number,
+    @Param('task_id') task_id: number,
+  ) {
+    console.log('updateTaskDone');
+    return this.tasksService.updateTaskStatus(id, task_id);
+  }
+
   @Patch(':task_id')
   async updateTask(
     @AuthUser('id') id: number,
@@ -51,14 +65,6 @@ export class TasksController {
     @Body() updateTaskDto: UpdateTaskDto,
   ) {
     return this.tasksService.updateTask(id, task_id, updateTaskDto);
-  }
-
-  @Patch(':task_id/status')
-  async updateTaskDone(
-    @AuthUser('id') id: number,
-    @Param('task_id') task_id: number,
-  ) {
-    return this.tasksService.updateTaskStatus(id, task_id);
   }
 
   @Delete(':task_id')
@@ -85,8 +91,4 @@ export class TasksController {
     return this.tasksService.findTaskByDate(id, date);
   }
 
-  @Get()
-  async findAllTasks(@AuthUser('id') id: number) {
-    return this.tasksService.findAllTasks(id);
-  }
 }
