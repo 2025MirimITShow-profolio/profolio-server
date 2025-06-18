@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Project } from './entity/projects.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { LessThanOrEqual, MoreThan, Repository } from 'typeorm';
+import { LessThan, LessThanOrEqual, MoreThan, MoreThanOrEqual, Repository } from 'typeorm';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { User } from 'src/users/entity/user.entity';
@@ -28,6 +28,9 @@ export class ProjectsService {
       user_id: user.id,
       user: user,
     });
+    
+    newProject.start_date = new Date();
+    newProject.end_date = new Date();
 
     console.log(newProject);
 
@@ -86,13 +89,16 @@ export class ProjectsService {
     userId: number,
   ): Promise<{ in_progress: number; completed: number }> {
     const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    console.log(today)
 
     const inProgressCnt = await this.projectRepository.count({
-      where: { user: { id: userId }, end_date: MoreThan(today) },
+      where: { user: { id: userId }, end_date: MoreThanOrEqual(today) },
     });
 
     const completedCnt = await this.projectRepository.count({
-      where: { user_id: userId, end_date: LessThanOrEqual(today) },
+      where: { user_id: userId, end_date: LessThan(today) },
     });
 
     return {
