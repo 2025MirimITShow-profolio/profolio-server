@@ -53,6 +53,9 @@ export class Project {
   team_members: string;
 
   @Column({ nullable: true })
+  member_profile: string;
+
+  @Column({ nullable: true })
   skills: string;
 
   @CreateDateColumn()
