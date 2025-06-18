@@ -1,17 +1,23 @@
-import { Controller, Post, Get, Patch, Delete, Param, Body } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Get,
+  Patch,
+  Delete,
+  Param,
+  Body,
+} from '@nestjs/common';
 import { SkillsService } from './skills.service';
 import { CreateSkillsDto } from './create-skills.dto';
 import { Skills } from './skills.entity';
 
-@Controller('skills')
+@Controller('api/skills')
 export class SkillsController {
   constructor(private readonly skillsService: SkillsService) {}
 
   // 스킬 추가 API
   @Post()
-  async createSkill(
-    @Body() createSkills : CreateSkillsDto
-  ){
+  async createSkill(@Body() createSkills: CreateSkillsDto) {
     return this.skillsService.createSkill(createSkills);
   }
 
@@ -20,12 +26,12 @@ export class SkillsController {
   async getSkills(): Promise<String[]> {
     return this.skillsService.getSkills();
   }
-  
+
   // 스킬 수정 API
   @Patch(':name/:newName')
   async updateSkillName(
     @Param('name') name: string,
-    @Param('newName') newName: string
+    @Param('newName') newName: string,
   ): Promise<Skills> {
     return this.skillsService.updateSkillName(name, newName);
   }
@@ -37,7 +43,7 @@ export class SkillsController {
   ) {
     return this.skillsService.addProjectToSkill(skillName, projectName);
   }
-  
+
   @Patch('remove/:skillName/:projectName')
   async removeProjectFromSkill(
     @Param('skillName') skillName: string,
