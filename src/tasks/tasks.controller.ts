@@ -36,19 +36,6 @@ export class TasksController {
     return this.tasksService.taskCounts(id);
   }
 
-  @Get()
-  async findTaskByDate(
-    @AuthUser('id') id: number,
-    @Query('date') date: string,
-  ) {
-    return this.tasksService.findTaskByDate(id, date);
-  }
-
-  @Get()
-  async findAllTasks(@AuthUser('id') id: number) {
-    return this.tasksService.findAllTasks(id);
-  }
-
   @Get(':task_id')
   async findOneTask(
     @AuthUser('id') id: number,
@@ -88,5 +75,18 @@ export class TasksController {
     @Param('project_id') project_id: number,
   ) {
     return this.tasksService.findAllTasksByProject(id, project_id);
+  }
+
+  @Get()
+  async findTaskByDate(
+    @AuthUser('id') id: number,
+    @Query('date') date: string,
+  ) {
+    return this.tasksService.findTaskByDate(id, date);
+  }
+
+  @Get()
+  async findAllTasks(@AuthUser('id') id: number) {
+    return this.tasksService.findAllTasks(id);
   }
 }
