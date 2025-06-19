@@ -5,8 +5,11 @@ import { join } from 'path';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
-  app.enableCors();
-  app.useStaticAssets(join(__dirname, '..', 'uploads'),{
+  app.enableCors({
+    origin: [`http:localhost:${process.env.PORT}`, 'http:localhost:5172'],
+    credentials: true,
+  });
+  app.useStaticAssets(join(__dirname, '..', 'uploads'), {
     prefix: '/uploads/',
   });
 
